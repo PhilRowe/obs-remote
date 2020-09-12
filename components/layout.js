@@ -10,7 +10,7 @@ const Layout = ({
     <>
         <Head title={title} />
         <div className="main">
-            <Header active={active} />
+            <Header title={title} />
             <div className="content">
                 {children}
             </div>

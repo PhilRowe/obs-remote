@@ -5,7 +5,7 @@ const Remote = () => {
     useObs();
 
     return (
-        <Layout title="Home" active="Remote">
+        <Layout title="Remote">
             <div>Hello</div>
         </Layout>
     );

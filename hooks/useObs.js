@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSettingsStore, useDispatchSettingsStore } from '../components/settingsStore';
-import { useObsStore, useDispatchObsStore } from '../components/obsStore'
-import { useRouter } from 'next/router'
+import { useObsStore, useDispatchObsStore } from '../components/obsStore';
+import { useRouter } from 'next/router';
 import obsWebSocket from 'obs-websocket-js';
 
 export default function useObs() {
