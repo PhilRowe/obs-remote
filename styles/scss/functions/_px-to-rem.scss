@@ -1,0 +1,27 @@
+@function parseInt($n) {
+    @return $n / ($n * 0 + 1);
+}
+
+@function getPxToRem($val){
+    @return ($val / $font-size-root) + 0rem;
+}
+
+@function pxToRem($values){
+    $list: ();
+
+    @each $value in $values {
+        // get the value and the unit
+        $unit : unit($value);
+        $val  : parseInt($value);
+        @if ($unit == 'px'){
+            $list: append($list, getPxToRem($value));
+        }
+        @else if($unit == 'rem'){
+            $list: append($list, $value);
+        }
+        @else {
+            @warn 'There is no unit conversion for #{$unit}';
+        }
+    }
+    @return $list();
+}

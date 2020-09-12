@@ -1,0 +1,30 @@
+/**
+ * based on intrinsic ratios
+ * Padding and margin have such intrinsic properties, and we can use them to create aspect ratios for elements that do not have any content in them.
+ * we can set padding-bottom to be relative to the width of an element.
+ * If we also set height to be 0, we'll get what we want
+ * http://www.smashingmagazine.com/2013/09/16/responsive-images-performance-problem-case-study/
+ */
+@mixin padding-bottom-hack($aspect-width, $aspect-height){
+	display: block;
+	position: relative;
+	height: 0;
+	padding-bottom: percentage($aspect-height / $aspect-width);
+	width: 100%;
+	overflow: hidden;
+}
+
+// square aspect ratio
+@mixin pbh-1-1{
+	@include padding-bottom-hack(1,1);
+}
+
+// 16:9 aspect ratio
+@mixin pbh-16-9{
+	@include padding-bottom-hack(16,9);
+}
+
+// 4:3 aspect ratio
+@mixin pbh-4-3{
+	@include padding-bottom-hack(4,3);
+}
