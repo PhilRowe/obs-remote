@@ -13,10 +13,6 @@ export default function useObs() {
     const obs = new obsWebSocket();
 
     useEffect(() => {
-        if (!obsStore.connected && router.pathname !== '/') {
-            router.push('/');
-        }
-
         if (obsStore.connected) {
             return;
         }
@@ -29,6 +25,7 @@ export default function useObs() {
             return;
         }
 
+        obs.disconnect();
         obs.connect({
             address: settingsStore.host + ':' + settingsStore.port,
             password: settingsStore.password

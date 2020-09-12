@@ -1,9 +1,14 @@
 import Layout from "../components/layout";
+import useObs from '../hooks/useObs';
 
-const Index = () => (
-    <Layout title="Home" active="index">
-        <div>Hello</div>
-    </Layout>
-)
+const Remote = () => {
+    useObs();
 
-export default Index;
+    return (
+        <Layout title="Home" active="Remote">
+            <div>Hello</div>
+        </Layout>
+    );
+}
+
+export default Remote;

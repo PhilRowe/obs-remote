@@ -8,7 +8,7 @@ import { useSettingsStore, useDispatchSettingsStore } from '../components/settin
 import { useObsStore } from '../components/obsStore'
 import useObs from '../hooks/useObs';
 
-const Login = () => {
+const Index = () => {
     useObs();
     const settingsStore = useSettingsStore();
     const settingsDispatch = useDispatchSettingsStore();
@@ -63,7 +63,7 @@ const Login = () => {
 
     return (
         <>
-            <Head title="Login" />
+            <Head title="Index" />
 
             <div className="form-signin my-4">
                 <div className="signin-logo mb-4">
@@ -102,4 +102,4 @@ const Login = () => {
     )
 };
 
-export default Login;
+export default Index;
