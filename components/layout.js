@@ -1,19 +1,19 @@
 import Head from "./layout/head";
 import Header from "./layout/header";
 import Footer from "./layout/footer";
+import Container from 'react-bootstrap/Container';
 
 const Layout = ({
     title,
-    active,
     children
 }) => (
     <>
         <Head title={title} />
         <div className="main">
             <Header title={title} />
-            <div className="content">
-                {children}
-            </div>
+                <Container>
+                    {children}
+                </Container>
             <Footer />
         </div>
     </>

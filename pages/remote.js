@@ -1,4 +1,5 @@
 import Layout from "../components/layout";
+import Scenes from "../components/obs/scenes";
 import useObs from '../hooks/useObs';
 
 const Remote = () => {
@@ -6,7 +7,8 @@ const Remote = () => {
 
     return (
         <Layout title="Remote">
-            <div>Hello</div>
+            <Scenes>
+            </Scenes>
         </Layout>
     );
 }
