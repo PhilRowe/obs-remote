@@ -1,6 +1,7 @@
 import { useObsStore } from '../../components/obsStore';
 import { useSettingsStore } from '../../components/settingsStore';
 import { useEffect, useState } from 'react';
+import Card from 'react-bootstrap/Card';
 
 const Scenes = ({ children }) => {
     const obsStore = useObsStore();
@@ -83,15 +84,18 @@ const Scenes = ({ children }) => {
         return scenes;
     }
 
+    const handleClick = (e, name) => {
+        e.preventDefault();
+        console.log(name);
+    };
+
     return (
         <>
-            <ul>
-                {scenesData.map(({ name }) => (
-                    <li>
-                        {name}
-                    </li>
-                ))}
-            </ul>
+            {scenesData.map(({ name }) => (
+                <Card key={name} className="mb-2" as="a" onClick={ e => handleClick(e, name)}>
+                    <Card.Body>{name}</Card.Body>
+                </Card>
+            ))}
 
             {children}
         </>
