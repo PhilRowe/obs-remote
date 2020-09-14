@@ -2,15 +2,19 @@ import { useObsStore } from '../../components/obsStore';
 import { useSettingsStore } from '../../components/settingsStore';
 import { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
+import classNames from "classnames";
+import { processScenes } from '../../lib/scenes';
+import { setScene, setPreview } from '../../lib/obs';
 
 const Scenes = ({ children }) => {
     const obsStore = useObsStore();
     const settingsStore = useSettingsStore();
     const [initialised, setInitialised] = useState(false);
     const [scenesData, setScenesData] = useState([]);
-    const [currentScene, setCurrentScene] = useState({
-        main: false,
-        preview: false
+    const [currentState, setCurrentState] = useState({
+        mainScene: false,
+        previewScene: false,
+        studioMode: false
     });
 
     useEffect(() => {
@@ -23,80 +27,110 @@ const Scenes = ({ children }) => {
             return;
         }
 
-        obsStore.obs.send('GetSceneList')
+        obsStore.obs.send('GetStudioModeStatus')
             .then(data => {
-                setScenesData(processScenes(data.scenes));
-                setCurrentScene(prevState => ({
-                    ...prevState,
-                    main: data.currentScene
-                }));
-
-                return obsStore.obs.send('GetPreviewScene');
+                if (data && data.studioMode) {
+                    setCurrentState(prevState => ({
+                        ...prevState,
+                        studioMode: data.studioMode
+                    }));
+                }
+                return obsStore.obs.send('GetSceneList');
             })
             .then(data => {
-                setCurrentScene(prevState => ({
+                setScenesData(processScenes(data.scenes, settingsStore.hideAfter));
+                setCurrentState(prevState => ({
                     ...prevState,
-                    preview: data.name
+                    mainScene: data.currentScene
+                }));
+
+                if (currentState.studioMode) {
+                    return obsStore.obs.send('GetPreviewScene');
+                }
+                return false;
+            })
+            .then(data => {
+                setCurrentState(prevState => ({
+                    ...prevState,
+                    previewScene: data.name
                 }));
             })
             .catch(_ => {
                 // studio mode may be disabled which could trigger this
             });
 
-        obsStore.obs.on('ScenesChanged', data => {
+        obsStore.obs.on('ScenesChanged', () => {
             obsStore.obs.send('GetSceneList')
                 .then(data => {
-                    setScenesData(processScenes(data.scenes));
-                    setCurrentScene(prevState => ({
+                    setScenesData(processScenes(data.scenes, settingsStore.hideAfter));
+                    setCurrentState(prevState => ({
                         ...prevState,
-                        main: data.currentScene
+                        mainScene: data.currentState
                     }));
                 });
         });
 
         obsStore.obs.on('SwitchScenes', data => {
-            setCurrentScene(prevState => ({
+            setCurrentState(prevState => ({
                 ...prevState,
-                main: data.sceneName
+                mainScene: data.sceneName
             }));
         });
 
         obsStore.obs.on('PreviewSceneChanged', data => {
-            setCurrentScene(prevState => ({
+            setCurrentState(prevState => ({
                 ...prevState,
-                preview: data.sceneName
+                previewScene: data.sceneName
             }));
         });
 
-    }, [obsStore.connected]);
-
-    function processScenes(scenes) {
-        var found = true;
-
-        scenes = scenes.filter(scene => {
-            if (found && scene.name.includes(settingsStore.hideAfter)) {
-                found = false;
-            }
-
-            return found;
+        obsStore.obs.on('StudioModeSwitched', data => {
+            setCurrentState(prevState => ({
+                ...prevState,
+                studioMode: data.studioMode
+            }));
         });
-
-        return scenes;
-    }
+    }, [obsStore.connected]);
 
     const handleClick = (e, name) => {
         e.preventDefault();
-        console.log(name);
+
+        // is it already the mainScene?
+        if (name === currentState.mainScene) {
+            return;
+        }
+        // if its the preview scene, set it as the mainScene
+        if (name === currentState.previewScene) {
+            setScene(obsStore.obs, name);
+        }
+
+        if (currentState.studioMode) {
+            // set Preview
+            setPreview(obsStore.obs, name);
+        } else {
+            setScene(obsStore.obs, name);
+        }
     };
 
     return (
         <>
-            {scenesData.map(({ name }) => (
-                <Card key={name} className="mb-2" as="a" onClick={ e => handleClick(e, name)}>
-                    <Card.Body>{name}</Card.Body>
-                </Card>
-            ))}
-
+            <div className="scene-list-wrapper mt-4">
+                {scenesData.map(({ name }) => (
+                    <Card
+                        key={name}
+                        className={classNames({
+                            'scene-item': true,
+                            'mb-2': true,
+                            'main-scene': name === currentState.mainScene,
+                            'preview-scene': name === currentState.previewScene
+                        })}
+                        as="a"
+                        onClick={ e => handleClick(e, name)}
+                    >
+                        <Card.Body>{name}</Card.Body>
+                    </Card>
+                ))}
+            </div>
             {children}
         </>
     );

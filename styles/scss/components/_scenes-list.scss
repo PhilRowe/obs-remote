@@ -1,0 +1,19 @@
+.scene-list-wrapper {
+
+    .scene-item {
+        color: inherit;
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: none;
+        }
+
+        &.preview-scene {
+            border: 1px solid $previewScene;
+        }
+
+        &.main-scene {
+            border: 1px solid $mainScene;
+        }
+    }
+}
