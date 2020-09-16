@@ -19,7 +19,10 @@ const Header = ({ title }) => {
 
     const handleLogout = (e) => {
         e.preventDefault();
-        obsStore.obs.disconnect();
+
+        if (obsStore.obs) {
+            obsStore.obs.disconnect();
+        }
 
         obsDispatch({
             type: 'all',

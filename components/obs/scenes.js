@@ -1,6 +1,6 @@
 import { useObsStore } from '../../components/obsStore';
 import { useSettingsStore } from '../../components/settingsStore';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Card from 'react-bootstrap/Card';
 import classNames from "classnames";
 import { processScenes } from '../../lib/scenes';
@@ -9,34 +9,35 @@ import { setScene, setPreview } from '../../lib/obs';
 const Scenes = ({ children }) => {
     const obsStore = useObsStore();
     const settingsStore = useSettingsStore();
-    const [initialised, setInitialised] = useState(false);
     const [scenesData, setScenesData] = useState([]);
     const [currentState, setCurrentState] = useState({
         mainScene: false,
-        previewScene: false,
-        studioMode: false
+        previewScene: false
     });
+    let studioMode = useRef(false);
+    let initialised = useRef(false);
 
     useEffect(() => {
         if (!obsStore.connected) {
-            setInitialised(false);
+            initialised.current = false;
             return;
         }
 
-        if (initialised) {
+        // Only want to setup events and get data once...
+        if (initialised.current) {
             return;
         }
 
+        initialised.current = true;
         obsStore.obs.send('GetStudioModeStatus')
+            // Studio mode data
             .then(data => {
                 if (data && data.studioMode) {
-                    setCurrentState(prevState => ({
-                        ...prevState,
-                        studioMode: data.studioMode
-                    }));
+                    studioMode.current = data.studioMode;
                 }
                 return obsStore.obs.send('GetSceneList');
             })
+            // Scene list data
             .then(data => {
                 setScenesData(processScenes(data.scenes, settingsStore.hideAfter));
                 setCurrentState(prevState => ({
@@ -44,11 +45,12 @@ const Scenes = ({ children }) => {
                     mainScene: data.currentScene
                 }));
 
-                if (currentState.studioMode) {
+                if (studioMode.current) {
                     return obsStore.obs.send('GetPreviewScene');
                 }
                 return false;
             })
+            // Preview scene data
             .then(data => {
                 setCurrentState(prevState => ({
                     ...prevState,
@@ -59,6 +61,8 @@ const Scenes = ({ children }) => {
                 // studio mode may be disabled which could trigger this
             });
 
+        // When a scene list changes we need to reload
+        // Note: doesn't trigger for reorders???
         obsStore.obs.on('ScenesChanged', () => {
             obsStore.obs.send('GetSceneList')
                 .then(data => {
@@ -70,6 +74,7 @@ const Scenes = ({ children }) => {
                 });
         });
 
+        // The "main scene has been changed"
         obsStore.obs.on('SwitchScenes', data => {
             setCurrentState(prevState => ({
                 ...prevState,
@@ -77,6 +82,7 @@ const Scenes = ({ children }) => {
             }));
         });
 
+        // The preview scene has been changed
         obsStore.obs.on('PreviewSceneChanged', data => {
             setCurrentState(prevState => ({
                 ...prevState,
@@ -84,11 +90,17 @@ const Scenes = ({ children }) => {
             }));
         });
 
+        // Studio mode has been toggled,
+        // We use this to determine if we need to
+        // an "active" preview scene
         obsStore.obs.on('StudioModeSwitched', data => {
-            setCurrentState(prevState => ({
-                ...prevState,
-                studioMode: data.studioMode
-            }));
+            studioMode.current = data.studioMode;
+            if (!data.studioMode) {
+                setCurrentState(prevState => ({
+                    ...prevState,
+                    previewScene: false
+                }));
+            }
         });
     }, [obsStore.connected]);
 
@@ -104,7 +116,7 @@ const Scenes = ({ children }) => {
             setScene(obsStore.obs, name);
         }
 
-        if (currentState.studioMode) {
+        if (studioMode.current) {
             // set Preview
             setPreview(obsStore.obs, name);
         } else {

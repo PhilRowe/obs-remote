@@ -46,25 +46,38 @@ export default function useObs() {
             }
         })
         .catch(err => {
-            obsDispatch({
-                type: 'all',
-                value: {
-                    obs: false,
-                    message: 'Failed to connect to OBS. Error: "' + err.description + '"',
-                    connected: false
-                }
-            });
-
-            settingsDispatch({
-                type: 'byKey',
-                key: 'autoConnect',
-                value: false
-            });
-
-            if (router.pathname != '/') {
-                router.push('/');
-            }
+            reset('Failed to connect to OBS. Error: "' + err.description + '"');
         });
 
+        // Handle the connection being closed
+        obs.on('ConnectionClosed', data => {
+            reset('Connection closed, Please reconnect.');
+        });
+
+        obs.on('error', err => {
+            console.log('Hello');
+            reset('socket error');
+        });
     }, [settingsStore]);
+
+    const reset = (message) => {
+        // Remove global OBS object
+        obsDispatch({
+            type: 'all',
+            value: {
+                obs: false,
+                message: message,
+                connected: false
+            }
+        });
+        // Turn off autoconnect
+        settingsDispatch({
+            type: 'byKey',
+            key: 'autoConnect',
+            value: false
+        });
+
+        // Redirect to the login page
+        router.push('/');
+    };
 }
