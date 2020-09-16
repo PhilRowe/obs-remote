@@ -28,7 +28,8 @@ export default function useObs() {
         obs.disconnect();
         obs.connect({
             address: settingsStore.host + ':' + settingsStore.port,
-            password: settingsStore.password
+            password: settingsStore.password,
+            secure: (location.protocol === 'https:')
         })
         .then(() => {
             obsDispatch({
