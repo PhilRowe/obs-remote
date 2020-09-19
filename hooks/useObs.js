@@ -33,12 +33,9 @@ export default function useObs() {
         })
         .then(() => {
             obsDispatch({
-                type: 'all',
-                value: {
-                    obs: obs,
-                    message: '',
-                    connected: true
-                }
+                obs: obs,
+                message: '',
+                connected: true
             });
 
             if (router.pathname === '/') {
@@ -55,7 +52,6 @@ export default function useObs() {
         });
 
         obs.on('error', err => {
-            console.log('Hello');
             reset('socket error');
         });
     }, [settingsStore]);
@@ -63,12 +59,7 @@ export default function useObs() {
     const reset = (message) => {
         // Remove global OBS object
         obsDispatch({
-            type: 'all',
-            value: {
-                obs: false,
-                message: message,
-                connected: false
-            }
+            type: 'reset'
         });
         // Turn off autoconnect
         settingsDispatch({

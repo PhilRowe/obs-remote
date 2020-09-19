@@ -5,15 +5,21 @@ const ObsDispatchContext = createContext();
 const ObsInitial = {
     obs: false,
     message: '',
-    connected: false
+    connected: false,
+    studioMode: false,
+    mainScene: false,
+    previewScene: false,
+    scenes: []
 };
 
 const reducer = (state, action) => {
+    if (typeof action === 'object' && !!action && !('type' in action)) {
+        return Object.assign({}, state, action);
+    }
+
     switch (action.type) {
         case "reset":
             return ObsInitial;
-        case 'all':
-            return Object.assign({}, state, action.value);
         case 'setObs':
             return { ...state, obs: action.value };
         case 'setMessage':

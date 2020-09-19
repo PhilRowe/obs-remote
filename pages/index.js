@@ -2,7 +2,7 @@ import Head from "../components/layout/head";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Alert from 'react-bootstrap/Alert';
-import { useInput } from '../hooks/input';
+import { useInput } from '../hooks/useInput';
 import { useState, useEffect } from 'react';
 import { useSettingsStore, useDispatchSettingsStore } from '../components/settingsStore';
 import { useObsStore } from '../components/obsStore'
