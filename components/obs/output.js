@@ -161,11 +161,11 @@ const Output = ({ children }) => {
                     <Container>
                         <Row>
                             {previewScreenshot
-                                ? <RenderScene sceneClass="preview" sceneName={previewScene + ' -> Preview'} screenshot={previewScreenshot} />
+                                ? <RenderScene sceneClass="preview" sceneName={previewScene + ' [Preview]'} screenshot={previewScreenshot} />
                                 : <RenderPlaceholderScene sceneClass="preview" sceneName="Preview" />
                             }
                             {mainScreenshot
-                                ? <RenderScene sceneClass="main" sceneName={mainScene + ' -> Program'} screenshot={mainScreenshot} />
+                                ? <RenderScene sceneClass="main" sceneName={mainScene + ' [Program]'} screenshot={mainScreenshot} />
                                 : <RenderPlaceholderScene sceneClass="main" sceneName="Preview" />
                             }
                         </Row>

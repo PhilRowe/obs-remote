@@ -1,5 +1,14 @@
-html,
 body {
-    background-color: $gray-200;
     min-height: 100vh;
+    /* mobile viewport bug fix */
+    min-height: -webkit-fill-available;
+    background-color: $gray-200;
+}
+
+html {
+    height: -webkit-fill-available;
+}
+
+.main {
+    position: relative;
 }
