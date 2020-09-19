@@ -1,8 +1,9 @@
+import Container from 'react-bootstrap/Container';
+import Card from 'react-bootstrap/Card';
+import classNames from "classnames";
 import { useObsStore } from '../../components/obsStore';
 import { useSettingsStore } from '../../components/settingsStore';
 import { useEffect, useState, useRef } from 'react';
-import Card from 'react-bootstrap/Card';
-import classNames from "classnames";
 import { processScenes } from '../../lib/scenes';
 import { setScene, setPreview } from '../../lib/obs';
 
@@ -58,8 +59,8 @@ const Scenes = ({ children }) => {
     };
 
     return (
-        <>
-            <div className="scene-list-wrapper mt-4">
+        <Container>
+            <div className="scene-list-wrapper pt-2 pb-4">
                 {scenes.map(({ name }) => (
                     <Card
                         key={name}
@@ -77,7 +78,7 @@ const Scenes = ({ children }) => {
                 ))}
             </div>
             {children}
-        </>
+        </Container>
     );
 };
 

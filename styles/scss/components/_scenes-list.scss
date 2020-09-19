@@ -1,19 +1,25 @@
 .scene-list-wrapper {
 
     .scene-item {
+        border: 1px solid $gray-400;
+        border-left: 4px solid $gray-400;
         color: inherit;
         cursor: pointer;
+
+        .card-body {
+            padding: 0.75rem;
+        }
 
         &:hover {
             text-decoration: none;
         }
 
         &.preview-scene {
-            border: 1px solid $previewScene;
+            border-left-color: $previewScene;
         }
 
         &.main-scene {
-            border: 1px solid $mainScene;
+            border-left-color: $mainScene;
         }
     }
 }

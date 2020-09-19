@@ -11,5 +11,7 @@ $theme-colors: map-merge(
     $theme-colors
 );
 
-$previewScene: #63B3ED;
-$mainScene: #FC8181;
+$previewScene: #3182CE;
+$previewScene-background: lighten($previewScene, 38%);
+$mainScene: #38A169;
+$mainScene-background: lighten($mainScene, 44%);

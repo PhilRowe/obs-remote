@@ -1,0 +1,63 @@
+.output-holder {
+    background-color: $gray-200;
+
+    &.sticky {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        box-shadow: 0 3px 3px rgba(0,0,0,0.10);
+    }
+}
+
+.output-scene {
+    margin-bottom: 1rem;
+
+    .img-wrapper {
+        position: relative;
+        border: 1px solid $gray-400;
+        border-left: 4px solid $white;
+
+        &:after {
+            content: '';
+            @include pbh-16-9;
+        }
+
+        img {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    }
+
+    .scene-title {
+        text-align: center;
+
+        span {
+            background-color: $white;
+            display: block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0 0 4px 4px;
+        }
+    }
+}
+
+.main .output-scene {
+    .img-wrapper {
+        border-left-color: $mainScene;
+    }
+
+    .scene-title span {
+        background-color: $mainScene-background;
+    }
+}
+
+.preview .output-scene {
+    .img-wrapper {
+        border-left-color: $previewScene;
+    }
+
+    .scene-title span {
+        background-color: $previewScene-background;
+    }
+}

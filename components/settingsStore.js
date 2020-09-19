@@ -7,7 +7,6 @@ const storeInitial = {
     port: '',
     password: '',
     autoConnect: true,
-    studioMode: true,
     livePreview: true,
     hideAfter: '------------'
 };
