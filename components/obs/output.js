@@ -1,4 +1,3 @@
-import Container from 'react-bootstrap/Container';
 import Row from "react-bootstrap/Row";
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
@@ -7,7 +6,6 @@ import { useSettingsStore } from '../../components/settingsStore';
 import { useEffect, useState, useRef } from 'react';
 import classNames from "classnames";
 import { sendCommand } from '../../lib/obs';
-import throttle from 'lodash/throttle';
 
 const Output = ({ children }) => {
     const obsStore = useObsStore();
@@ -17,14 +15,11 @@ const Output = ({ children }) => {
     const [studioMode, setStudioMode] = useState(false);
     const [previewScreenshot, setPreviewScreenshot] = useState(false);
     const [mainScreenshot, setMainScreenshot] = useState(false);
-    const [sticky, setSticky] = useState(false);
-    const [height, setHeight] = useState(false);
     let timeout = useRef(false);
     let mainSceneRef = useRef(false);
     let previewSceneRef = useRef(false);
     let studioModeRef = useRef(false);
     let livePreview = useRef(false);
-    let elm = useRef(null);
 
     useEffect(() => {
         setMainScene(obsStore.mainScene);
@@ -46,26 +41,11 @@ const Output = ({ children }) => {
     }, [settingsStore.livePreview]);
 
     useEffect(() => {
-        getScreenshot();
+        getScreenshotMain();
+        getScreenshotPreview();
     }, [mainScene, previewScene, studioMode, settingsStore.livePreview]);
 
-    useEffect(() => {
-        let throttleScroll = throttle(handleScroll, 50);
-        let throttleResize = throttle(handleResize, 100);
-
-        window.addEventListener('scroll', throttleScroll);
-        window.addEventListener('resize', throttleResize);
-
-        handleScroll();
-        handleResize();
-
-        return () => {
-            window.removeEventListener('scroll', () => throttleScroll);
-            window.removeEventListener('resize', () => throttleResize);
-        };
-    }, []);
-
-    const getScreenshot = async () => {
+    const getScreenshotMain = async () => {
         if (timeout.current) {
             clearTimeout(timeout.current);
         }
@@ -81,6 +61,16 @@ const Output = ({ children }) => {
             }
         }
 
+        if (livePreview.current) {
+            timeout.current = setTimeout(getScreenshotMain, 500);
+        }
+    };
+
+    const getScreenshotPreview = async () => {
+        if (!obsStore.connected || !mainSceneRef.current) {
+            return;
+        }
+
         if (studioModeRef.current && previewSceneRef.current) {
             let data = await sendCommand(obsStore.obs, 'TakeSourceScreenshot', { sourceName: previewSceneRef.current, embedPictureFormat: 'jpeg', width: 1920, height: 1080 });
             if (data && data.img) {
@@ -88,23 +78,6 @@ const Output = ({ children }) => {
             }
         } else {
             setPreviewScreenshot(false);
-        }
-
-        if (livePreview.current) {
-            timeout.current = setTimeout(getScreenshot, 500);
-        }
-    };
-
-    const handleScroll = () => {
-        if (elm.current) {
-            setSticky(elm.current.parentNode.getBoundingClientRect().top <= 0);
-            handleResize();
-        }
-    };
-
-    const handleResize = () => {
-        if (elm.current) {
-            setHeight(elm.current.offsetHeight);
         }
     };
 
@@ -121,7 +94,9 @@ const Output = ({ children }) => {
             <Col sm={6} className={props.sceneClass}>
                 <div className="output-scene">
                     <div className="img-wrapper">
-                        <Image src={props.screenshot} fluid />
+                        <div className="img-holder">
+                            <Image src={props.screenshot} fluid />
+                        </div>
                     </div>
                     <RenderTitle sceneName={props.sceneName} />
                 </div>
@@ -133,7 +108,9 @@ const Output = ({ children }) => {
         return (
             <Col sm={6} className={props.sceneClass}>
                 <div className="output-scene">
-                    <div className="img-wrapper"></div>
+                    <div className="img-wrapper">
+                        <div className="img-holder"></div>
+                    </div>
                     <RenderTitle sceneName={props.sceneName} />
                 </div>
             </Col>
@@ -144,33 +121,20 @@ const Output = ({ children }) => {
         <>
             <div
                 className={classNames({
+                    'output-holder': true,
                     'studioMode': studioMode,
-                    'output-wrapper': true
-
                 })}
-                style={{ height: height }}
             >
-                <div
-                    className={classNames({
-                        'output-holder': true,
-                        'pt-4': true,
-                        'sticky': sticky
-                    })}
-                    ref={elm}
-                >
-                    <Container>
-                        <Row>
-                            {previewScreenshot
-                                ? <RenderScene sceneClass="preview" sceneName={previewScene + ' [Preview]'} screenshot={previewScreenshot} />
-                                : <RenderPlaceholderScene sceneClass="preview" sceneName="Preview" />
-                            }
-                            {mainScreenshot
-                                ? <RenderScene sceneClass="main" sceneName={mainScene + ' [Program]'} screenshot={mainScreenshot} />
-                                : <RenderPlaceholderScene sceneClass="main" sceneName="Preview" />
-                            }
-                        </Row>
-                    </Container>
-                </div>
+                <Row>
+                    {previewScreenshot
+                        ? <RenderScene sceneClass="preview" sceneName={previewScene + ' [Preview]'} screenshot={previewScreenshot} />
+                        : <RenderPlaceholderScene sceneClass="preview" sceneName="Preview" />
+                    }
+                    {mainScreenshot
+                        ? <RenderScene sceneClass="main" sceneName={mainScene + ' [Program]'} screenshot={mainScreenshot} />
+                        : <RenderPlaceholderScene sceneClass="main" sceneName="Preview" />
+                    }
+                </Row>
             </div>
             {children}
         </>

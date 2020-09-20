@@ -1,6 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbtack } from '@fortawesome/free-solid-svg-icons'
-import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
 import Row from "react-bootstrap/Row";
 import Col from 'react-bootstrap/Col';
@@ -8,22 +7,19 @@ import classNames from "classnames";
 import { useObsStore } from '../../components/obsStore';
 import { useSettingsStore, useDispatchSettingsStore } from '../../components/settingsStore';
 import { useEffect, useState, useRef } from 'react';
-import { processScenes } from '../../lib/scenes';
 import { handleSceneChange } from '../../lib/obs';
 import pull from 'lodash/pull';
 
-const Scenes = ({ children }) => {
+const PinnedScenes = ({ children }) => {
     const obsStore = useObsStore();
     const settingsStore = useSettingsStore();
     const settingsDispatch = useDispatchSettingsStore();
     const [mainScene, setMainScene] = useState(false);
     const [previewScene, setPreviewScene] = useState(false);
-    const [scenes, setScenes] = useState([]);
     const [pinnedScenes, setPinnedScenes] = useState([]);
     let mainSceneRef = useRef(false);
     let previewSceneRef = useRef(false);
     let studioModeRef = useRef(false);
-    let pinnedScenesRef = useRef([]);
 
     useEffect(() => {
         setMainScene(obsStore.mainScene);
@@ -40,17 +36,29 @@ const Scenes = ({ children }) => {
     }, [obsStore.studioMode]);
 
     useEffect(() => {
-        setScenes(processScenes(obsStore.scenes, settingsStore.hideAfter));
-    }, [obsStore.scenes]);
+        setPinnedScenes(settingsStore.pinnedScenes);
+    }, [settingsStore.pinnedScenes]);
 
     useEffect(() => {
-        setPinnedScenes(settingsStore.pinnedScenes);
-        pinnedScenesRef.current = settingsStore.pinnedScenes;
-    }, [settingsStore.pinnedScenes]);
+        if (!pinnedScenes || !pinnedScenes.length) {
+            return;
+        }
+        if (!obsStore.scenes || !obsStore.scenes.length) {
+            return;
+        }
+
+        // Lets check our pinned scenes are still valid :-)
+        let available = obsStore.scenes.map(value => value.name);
+        let found = pinnedScenes.filter(name => available.includes(name));
+        if (found.length !== pinnedScenes.length) {
+            settingsDispatch({
+                pinnedScenes: found
+            });
+        }
+    }, [obsStore.scenes]);
 
     const handleSceneClick = (e, name) => {
         e.preventDefault();
-
         return handleSceneChange(
             obsStore.obs,
             name,
@@ -62,34 +70,28 @@ const Scenes = ({ children }) => {
 
     const handlePinClick = (e, name) => {
         e.preventDefault();
-        if (pinnedScenes.includes(name)) {
-            // remove the pin
-            let pins = [...pinnedScenes];
-            pull(pins, name);
-            settingsDispatch({
-                pinnedScenes: pins
-            });
-            return;
-        }
-
-        // Add the new Pin
-        let pins = [...pinnedScenes, name];
+        let pins = [...pinnedScenes];
+        pull(pins, name);
         settingsDispatch({
             pinnedScenes: pins
         });
     };
 
+    if (!pinnedScenes || pinnedScenes.length === 0) {
+        return (<></>);
+    }
+
     return (
-        <Container>
-            <div className="scene-list-wrapper pb-4">
-                {scenes.map(({ name }) => (
+        <>
+            <div className="scene-list-wrapper pt-2">
+                {pinnedScenes.map((name, index) => (
                     <Card
                         key={name}
                         className={classNames({
                             'scene-item': true,
-                            'mb-2': true,
+                            'mb-2': (index !== pinnedScenes.length - 1),
                             'main-scene': name === mainScene,
-                            'preview-scene': name === previewScene
+                            'preview-scene': name === previewScene,
                         })}
                     >
                         <Card.Body>
@@ -103,7 +105,7 @@ const Scenes = ({ children }) => {
                                     <a
                                         className={classNames({
                                             'pin': true,
-                                            'is-pinned': pinnedScenes.includes(name)
+                                            'is-pinned': true,
                                         })}
                                         onClick={ e => handlePinClick(e, name)}
                                     >
@@ -116,8 +118,8 @@ const Scenes = ({ children }) => {
                 ))}
             </div>
             {children}
-        </Container>
+        </>
     );
 };
 
-export default Scenes;
+export default PinnedScenes;

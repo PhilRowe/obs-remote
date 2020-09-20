@@ -55,7 +55,7 @@ export default function useObs() {
             obsStore.obs.send('GetSceneList')
                 .then(data => {
                     obsDispatch({
-                        mainScene: data.currentState,
+                        mainScene: data.currentScene,
                         scenes: data.scenes
                     });
                 });

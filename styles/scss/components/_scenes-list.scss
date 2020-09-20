@@ -3,15 +3,46 @@
     .scene-item {
         border: 1px solid $gray-400;
         border-left: 4px solid $gray-400;
-        color: inherit;
-        cursor: pointer;
 
         .card-body {
-            padding: 0.75rem;
-        }
+            padding: 0;
 
-        &:hover {
-            text-decoration: none;
+            .scene-name {
+                display: block;
+                padding: 0.75rem;
+                padding-right: 0;
+                color: inherit;
+                cursor: pointer;
+
+                &:hover {
+                    text-decoration: none;
+                }
+            }
+
+            .pin-col {
+                display: flex;
+                flex-direction: column;
+                flex: 0 0 auto;
+                width: auto;
+                max-width: 100%;
+
+                .pin {
+                    display: flex;
+                    flex: 1;
+                    align-items: center;
+                    padding: 0 1rem;
+                    cursor: pointer;
+
+                    &.is-pinned {
+                        color: $secondary;
+
+                        &:hover {
+                            text-decoration: none;
+                            color: darken($secondary, 10%);
+                        }
+                    }
+                }
+            }
         }
 
         &.preview-scene {

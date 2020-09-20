@@ -47,6 +47,7 @@
 // Mixins
 @import "scss/mixins/triangle";
 @import "scss/mixins/responsive-images-pbh";
+@import "scss/mixins/button";
 
 // Functions
 @import "scss/functions/px-to-rem";
@@ -64,6 +65,7 @@
 @import "scss/pages/login";
 
 // Components
+@import "scss/components/sticky-top";
 @import "scss/components/scenes-list";
 @import "scss/components/output";
 @import "scss/components/dock";

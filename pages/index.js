@@ -51,13 +51,10 @@ const Index = () => {
         });
 
         settingsDispatch({
-            type: 'all',
-            value: {
-                host: host || 'localhost',
-                port: port || '4444',
-                password: password,
-                autoConnect: true
-            }
+            host: host || 'localhost',
+            port: port || '4444',
+            password: password,
+            autoConnect: true
         });
     }
 

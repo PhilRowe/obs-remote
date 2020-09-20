@@ -8,16 +8,19 @@ const storeInitial = {
     password: '',
     autoConnect: true,
     livePreview: true,
-    hideAfter: '------------'
+    hideAfter: '------------',
+    pinnedScenes: []
 };
 const StorageKey = 'settings';
 
 const reducer = (state, action) => {
+    if (typeof action === 'object' && !!action && !('type' in action)) {
+        return Object.assign({}, state, action);
+    }
+
     switch (action.type) {
         case "reset":
             return storeInitial;
-        case 'all':
-            return Object.assign({}, state, action.value);
         case 'byKey':
             return { ...state, [action.key]: action.value };
         default:
@@ -36,11 +39,7 @@ export const SettingsStoreProvider = ({ children }) => {
     });
 
     useEffect(() => {
-        dispatch({
-            type: 'all',
-            value: Object.assign({}, storeInitial, JSON.parse(localStorage.getItem(StorageKey)))
-        });
-
+        dispatch(Object.assign({}, storeInitial, JSON.parse(localStorage.getItem(StorageKey))));
         setIsInitialized(true);
     }, []);
 

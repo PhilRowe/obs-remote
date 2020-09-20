@@ -25,21 +25,15 @@ const Header = ({ title }) => {
         }
 
         obsDispatch({
-            type: 'all',
-            value: {
-                obs: false,
-                connected: false
-            }
+            obs: false,
+            connected: false
         });
 
         settingsDispatch({
-            type: 'all',
-            value: {
-                host: '',
-                port: '',
-                password: '',
-                autoConnect: false
-            }
+            host: '',
+            port: '',
+            password: '',
+            autoConnect: false
         });
 
         router.push('/');
