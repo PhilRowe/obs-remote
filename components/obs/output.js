@@ -20,11 +20,16 @@ const Output = ({ children }) => {
     let previewSceneRef = useRef(false);
     let studioModeRef = useRef(false);
     let livePreview = useRef(false);
+    let connected = useRef(false);
 
     useEffect(() => {
         setMainScene(obsStore.mainScene);
         mainSceneRef.current = obsStore.mainScene;
     }, [obsStore.mainScene]);
+
+    useEffect(() => {
+        connected.current = obsStore.connected;
+    }, [obsStore.connected]);
 
     useEffect(() => {
         setPreviewScene(obsStore.previewScene);
@@ -50,7 +55,7 @@ const Output = ({ children }) => {
             clearTimeout(timeout.current);
         }
 
-        if (!obsStore.connected || !mainSceneRef.current) {
+        if (!connected.current || !mainSceneRef.current) {
             return;
         }
 
@@ -67,7 +72,7 @@ const Output = ({ children }) => {
     };
 
     const getScreenshotPreview = async () => {
-        if (!obsStore.connected || !mainSceneRef.current) {
+        if (!connected.current || !mainSceneRef.current) {
             return;
         }
 

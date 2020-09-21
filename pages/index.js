@@ -13,25 +13,31 @@ const Index = () => {
     const settingsStore = useSettingsStore();
     const settingsDispatch = useDispatchSettingsStore();
     const obsStore = useObsStore();
-    const { value: host, setValue: setHost, bind: bindHost, reset: resetHost } = useInput('');
-    const { value: port, setValue: setPort, bind: bindPort, reset: resetPort } = useInput('');
-    const { value: password, setValue: setPassword, bind: bindPassword, reset: resetPassword } = useInput('');
+    const { value: host, setValue: setHost, bind: bindHost } = useInput('');
+    const { value: port, setValue: setPort, bind: bindPort } = useInput('');
+    const { value: password, setValue: setPassword, bind: bindPassword } = useInput('');
+    const [secure, setSecure] = useState(false);
+
     const [message, setMessage] = useState({
         show: false,
         text: ""
     });
 
     useEffect(() => {
-        if (host !== settingsStore.host) {
-            setHost(settingsStore.host);
-        }
-        if (host !== settingsStore.port) {
-            setPort(settingsStore.port);
-        }
-        if (host !== settingsStore.password) {
-            setPassword(settingsStore.password);
-        }
-    }, [settingsStore]);
+        setHost(settingsStore.host);
+    }, [settingsStore.host]);
+
+    useEffect(() => {
+        setPort(settingsStore.port);
+    }, [settingsStore.port]);
+
+    useEffect(() => {
+        setPassword(settingsStore.password);
+    }, [settingsStore.password]);
+
+    useEffect(() => {
+        setSecure(settingsStore.secure);
+    }, [settingsStore.secure]);
 
     useEffect(() => {
         if (message !== obsStore.message) {
@@ -50,10 +56,20 @@ const Index = () => {
             text: ""
         });
 
+        let currentHost = host;
+        let currentPort = port;
+        if (!currentHost) {
+            currentHost = 'localhost';
+            if (!currentPort) {
+                currentPort = '4444'
+            }
+        }
+
         settingsDispatch({
-            host: host || 'localhost',
-            port: port || '4444',
+            host: currentHost,
+            port: currentPort,
             password: password,
+            secure: secure,
             autoConnect: true
         });
     }
@@ -77,7 +93,7 @@ const Index = () => {
                         <Form.Control type="text" placeholder="localhost (Current Computer)" {...bindHost} />
                     </Form.Group>
 
-                    <Form.Group controlId="formHost">
+                    <Form.Group controlId="formPort">
                         <Form.Label>Port</Form.Label>
                         <Form.Control type="text" placeholder="4444" {...bindPort} />
                     </Form.Group>
@@ -88,6 +104,10 @@ const Index = () => {
                         <Form.Text className="text-muted">
                             Password not required if not set in OBS
                         </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group id="formSecure">
+                        <Form.Check type="checkbox" label="Secure Connection?" checked={secure} onChange={ e => setSecure(e.target.checked) }  />
                     </Form.Group>
 
                     <Button variant="primary" type="submit" size="lg" block>

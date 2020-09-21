@@ -6,6 +6,7 @@ const storeInitial = {
     host: '',
     port: '',
     password: '',
+    secure: false,
     autoConnect: true,
     livePreview: true,
     hideAfter: '------------',
