@@ -9,6 +9,7 @@ const storeInitial = {
     secure: false,
     autoConnect: true,
     livePreview: true,
+    refreshRate: 500,
     hideAfter: '------------',
     pinnedScenes: []
 };

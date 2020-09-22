@@ -1,6 +1,4 @@
 .output-scene {
-    margin-bottom: 1rem;
-
     .img-wrapper {
         border: 1px solid $gray-400;
         border-left: 4px solid $white;
@@ -23,35 +21,63 @@
             }
         }
     }
+}
+
+.output-holder {
+    .scene-title-wrapper {
+        margin-bottom: 1rem;
+    }
 
     .scene-title {
         text-align: center;
+        display: flex;
+        flex: 1;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        background-color: $white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0 0 4px 4px;
+    }
 
-        span {
-            background-color: $white;
-            display: block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0 0 4px 4px;
+    .main {
+        &.output-scene {
+            .img-wrapper {
+                border-left-color: $mainScene;
+            }
+        }
+
+        .scene-title {
+            background-color: $mainScene-background;
+        }
+    }
+
+    .preview {
+        &.output-scene {
+            .img-wrapper {
+                border-left-color: $previewScene;
+            }
+        }
+
+        .scene-title {
+            background-color: $previewScene-background;
         }
     }
 }
 
-.main .output-scene {
-    .img-wrapper {
-        border-left-color: $mainScene;
-    }
+@include media-breakpoint-down(sm) {
+    .output-scene {
+        margin-bottom: 1rem;
 
-    .scene-title span {
-        background-color: $mainScene-background;
+        &.hidden {
+            display: none;
+        }
     }
-}
-
-.preview .output-scene {
-    .img-wrapper {
-        border-left-color: $previewScene;
-    }
-
-    .scene-title span {
-        background-color: $previewScene-background;
+    .output-holder {
+        .scene-title-wrapper {
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+        }
     }
 }

@@ -15,11 +15,13 @@ const Output = ({ children }) => {
     const [studioMode, setStudioMode] = useState(false);
     const [previewScreenshot, setPreviewScreenshot] = useState(false);
     const [mainScreenshot, setMainScreenshot] = useState(false);
+    const [hiddenScene, setHiddenScene] = useState('preview');
     let timeout = useRef(false);
     let mainSceneRef = useRef(false);
     let previewSceneRef = useRef(false);
     let studioModeRef = useRef(false);
     let livePreview = useRef(false);
+    let refreshRate = useRef(false);
     let connected = useRef(false);
 
     useEffect(() => {
@@ -46,9 +48,19 @@ const Output = ({ children }) => {
     }, [settingsStore.livePreview]);
 
     useEffect(() => {
+        refreshRate.current = settingsStore.refreshRate;
+    }, [settingsStore.refreshRate]);
+
+    useEffect(() => {
         getScreenshotMain();
         getScreenshotPreview();
-    }, [mainScene, previewScene, studioMode, settingsStore.livePreview]);
+    }, [
+        mainScene,
+        previewScene,
+        studioMode,
+        settingsStore.livePreview,
+        settingsStore.refreshRate
+    ]);
 
     const getScreenshotMain = async () => {
         if (timeout.current) {
@@ -67,7 +79,7 @@ const Output = ({ children }) => {
         }
 
         if (livePreview.current) {
-            timeout.current = setTimeout(getScreenshotMain, 500);
+            timeout.current = setTimeout(getScreenshotMain, refreshRate.current);
         }
     };
 
@@ -96,29 +108,19 @@ const Output = ({ children }) => {
 
     function RenderScene(props) {
         return (
-            <Col sm={6} className={props.sceneClass}>
-                <div className="output-scene">
-                    <div className="img-wrapper">
-                        <div className="img-holder">
-                            <Image src={props.screenshot} fluid />
-                        </div>
-                    </div>
-                    <RenderTitle sceneName={props.sceneName} />
+            <div className="img-wrapper">
+                <div className="img-holder">
+                    <Image src={props.screenshot} fluid />
                 </div>
-            </Col>
+            </div>
         );
     }
 
     function RenderPlaceholderScene(props) {
         return (
-            <Col sm={6} className={props.sceneClass}>
-                <div className="output-scene">
-                    <div className="img-wrapper">
-                        <div className="img-holder"></div>
-                    </div>
-                    <RenderTitle sceneName={props.sceneName} />
-                </div>
-            </Col>
+            <div className="img-wrapper">
+                <div className="img-holder"></div>
+            </div>
         );
     }
 
@@ -131,14 +133,47 @@ const Output = ({ children }) => {
                 })}
             >
                 <Row>
-                    {previewScreenshot
-                        ? <RenderScene sceneClass="preview" sceneName={previewScene + ' [Preview]'} screenshot={previewScreenshot} />
-                        : <RenderPlaceholderScene sceneClass="preview" sceneName="Preview" />
-                    }
-                    {mainScreenshot
-                        ? <RenderScene sceneClass="main" sceneName={mainScene + ' [Program]'} screenshot={mainScreenshot} />
-                        : <RenderPlaceholderScene sceneClass="main" sceneName="Preview" />
-                    }
+                    <Col
+                        md={6}
+                        className={classNames({
+                            'output-scene': true,
+                            'preview': true,
+                            'hidden': hiddenScene === 'preview'
+                        })}
+                    >
+                        {previewScreenshot
+                            ? <RenderScene screenshot={previewScreenshot} />
+                            : <RenderPlaceholderScene />
+                        }
+                    </Col>
+                    <Col
+                        md={6}
+                        className={classNames({
+                            'output-scene': true,
+                            'main': true,
+                            'hidden': hiddenScene === 'main'
+                        })}
+                    >
+                        {mainScreenshot
+                            ? <RenderScene screenshot={mainScreenshot} />
+                            : <RenderPlaceholderScene />
+                        }
+                    </Col>
+                </Row>
+                <Row>
+                    <Col
+                        md={6} className="scene-title-wrapper preview" onClick={ e => setHiddenScene('main') }>
+                        {previewScreenshot
+                            ? <RenderTitle sceneName={previewScene + ' [Preview]'} />
+                            : <RenderTitle sceneName="Preview" />
+                        }
+                    </Col>
+                    <Col md={6} className="scene-title-wrapper main" onClick={ e => setHiddenScene('preview') }>
+                        {previewScreenshot
+                            ? <RenderTitle sceneName={mainScene + ' [Program]'} />
+                            : <RenderTitle sceneName="Program" />
+                        }
+                    </Col>
                 </Row>
             </div>
             {children}
