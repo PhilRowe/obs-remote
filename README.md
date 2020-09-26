@@ -2,6 +2,8 @@
 
 A web interface which allows you to change scenes in OBS.
 
+![OBS-Remote](https://user-images.githubusercontent.com/8597859/94350506-dcf9c800-0046-11eb-917f-addedece8618.png)
+
 ### Features:
 - No installation needed, works in any modern browser, works best on a tablet :-)
 - Support for remote control through [WSS tunnels](https://github.com/Palakis/obs-websocket/blob/4.x-current/SSL-TUNNELLING.md)
