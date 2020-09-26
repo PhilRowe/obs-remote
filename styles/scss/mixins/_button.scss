@@ -35,3 +35,11 @@
     line-height: $size;
     border-bottom: solid 3px $secondaryColor;
 }
+
+@mixin button-circle-size(
+    $size: 50px
+) {
+    width: $size;
+    height: $size;
+    line-height: $size;
+}

@@ -73,6 +73,12 @@
         &.hidden {
             display: none;
         }
+
+        .img-wrapper {
+            .img-holder {
+                max-width: 200px;
+            }
+        }
     }
     .output-holder {
         .scene-title-wrapper {

@@ -4,7 +4,11 @@
     bottom: 80px;
 
     @include media-breakpoint-down('lg') {
-        bottom: 150px;
+        bottom: 130px;
+    }
+
+    @include media-breakpoint-down('sm') {
+        bottom: 40px;
     }
 
     .dock-inner {
@@ -41,5 +45,16 @@
             $secondaryColor: $secondary,
             $textColor: $secondary
         );
+    }
+
+    @include media-breakpoint-down('sm') {
+        .transition a,
+        .refresh a {
+            @include button-circle-size(40px);
+
+            svg {
+                width: 10px;
+            }
+        }
     }
 }
