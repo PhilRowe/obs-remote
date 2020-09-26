@@ -107,7 +107,7 @@ const Scenes = ({ children }) => {
                                         })}
                                         onClick={ e => handlePinClick(e, name)}
                                     >
-                                        <FontAwesomeIcon icon={faThumbtack} size="md" />
+                                        <FontAwesomeIcon icon={faThumbtack} />
                                     </a>
                                 </Col>
                             </Row>
