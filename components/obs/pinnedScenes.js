@@ -109,7 +109,7 @@ const PinnedScenes = ({ children }) => {
                                         })}
                                         onClick={ e => handlePinClick(e, name)}
                                     >
-                                        <FontAwesomeIcon icon={faThumbtack} size="lg" />
+                                        <FontAwesomeIcon icon={faThumbtack} size="md" />
                                     </a>
                                 </Col>
                             </Row>

@@ -54,6 +54,12 @@ const Output = ({ children }) => {
     useEffect(() => {
         getScreenshotMain();
         getScreenshotPreview();
+
+        return () => {
+            if (timeout.current) {
+                clearTimeout(timeout.current);
+            }
+        }
     }, [
         mainScene,
         previewScene,

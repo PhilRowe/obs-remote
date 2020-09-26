@@ -57,6 +57,7 @@ const Header = ({ title }) => {
                     <Nav className="ml-auto">
                         <Nav.Link href="/remote" active={router.pathname === '/remote'} onClick={handleClick}>Remote</Nav.Link>
                         <Nav.Link href="/settings" active={router.pathname === '/settings'} onClick={handleClick}>Settings</Nav.Link>
+                        <Nav.Link href="/stats" active={router.pathname === '/stats'} onClick={handleClick}>Stats</Nav.Link>
                         <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
